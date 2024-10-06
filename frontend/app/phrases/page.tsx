@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from "react";
+import VolumeUpRoundedIcon from '@mui/icons-material/VolumeUpRounded';
 
 type Phrase = {
   id: number;
@@ -33,7 +34,9 @@ const PhraseIndex = () => {
             <div key={phrase.id} className="flex justify-between">
               <div className="flex-1">{phrase.cn_text}</div>
               <div className="flex-1">{phrase.jp_text}</div>
-              <button onClick={() => say(phrase.cn_text)}>読み上げ</button>
+              <button onClick={() => say(phrase.cn_text)}>
+                <VolumeUpRoundedIcon />
+              </button>
             </div>
           )
         })}
