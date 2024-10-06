@@ -7,6 +7,7 @@ type Phrase = {
   id: number;
   jp_text: string;
   cn_text: string;
+  pinyin: string;
   created_at: string;
   updated_at: string;
 }
@@ -17,10 +18,13 @@ const PhraseIndex = () => {
   const [jpText, setJpText] = useState<string>('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/phrases')
-      .then((res) => res.json())
-      .then((phrases) => setPhrases(phrases));
+    getPhrases().then(phrases => setPhrases(phrases));
   }, []);
+
+  const getPhrases = async () => {
+    const res = await fetch('http://localhost:3000/phrases');
+    return await res.json();
+  }
 
   const say = (text: string) => {
     const uttr = new SpeechSynthesisUtterance(text)
@@ -36,13 +40,12 @@ const PhraseIndex = () => {
         jp_text: jpText,
       }
     }
-    const response = await fetch('http://localhost:3000/phrases', {
+    await fetch('http://localhost:3000/phrases', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(params)
     });
-    const savedPhrase = await response.json();
-    setPhrases([...phrases, savedPhrase]);
+    await getPhrases().then(phrases => setPhrases(phrases));
     setCnText('');
     setJpText('');
   }
@@ -71,8 +74,11 @@ const PhraseIndex = () => {
         </form>
         {phrases.map((phrase) => {
           return (
-            <div key={phrase.id} className="flex justify-between">
-              <div className="flex-1">{phrase.cn_text}</div>
+            <div key={phrase.id} className="flex justify-between items-center border-solid border-2 border-zinc-100 p-2 mb-2">
+              <div className="flex-1 flex flex-col">
+                <span>{phrase.cn_text}</span>
+                <span className="text-zinc-400 text-xs">{phrase.pinyin}</span>
+              </div>
               <div className="flex-1">{phrase.jp_text}</div>
               <button onClick={() => say(phrase.cn_text)}>
                 <VolumeUpRoundedIcon />
